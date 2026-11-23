@@ -1,0 +1,8 @@
+# The ANGLE checkout, depot_tools, their caches and the build output (tool/build.sh).
+.build/
+
+# Libraries copied in for publishing; releases carry them.
+lib/native/
+
+.dart_tool/
+.DS_Store
