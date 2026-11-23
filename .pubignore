@@ -1,0 +1,4 @@
+# Published packages carry the built libraries; only the build tree stays out.
+.build/
+.dart_tool/
+.DS_Store

@@ -1,6 +1,7 @@
 #!/bin/bash
-# Builds Google's ANGLE at the pinned commit into lib/native/<platform>/: release libEGL and libGLESv2 with the Metal
-# backend only, for arm64 and x86_64, joined into universal libraries.
+# Builds Google's ANGLE at the pinned commit into lib/native/<platform>/<architecture>/libGLESv2.dylib: release, Metal
+# backend only, for arm64 and x64. ANGLE's libGLESv2 holds EGL too (as EGL_<name>), so libEGL, which only forwards to
+# it, is not built.
 #
 # Everything it downloads or caches stays in .build/ (git-ignored): depot_tools, the ANGLE checkout, its caches and
 # the build output. Deleting .build/ removes all of it. Nothing is installed system-wide, and depot_tools neither
@@ -109,21 +110,51 @@ args=(
 
 for cpu in arm64 x64; do
 	gn gen "out/$cpu" --args="${args[*]} target_cpu=\"$cpu\""
-	autoninja -C "out/$cpu" libEGL libGLESv2
+	autoninja -C "out/$cpu" libGLESv2
 done
 
 out=$root/lib/native/$platform
-mkdir -p "$out"
+rm -rf "$out"
 
-# Universal libraries, named and linked through @rpath as an app bundle loads them (gn names them ./lib*.dylib),
-# signed ad hoc again after the names change; the app signs them with its own identity when it embeds them.
-for library in libEGL libGLESv2; do
-	lipo -create "out/arm64/$library.dylib" "out/x64/$library.dylib" -output "$out/$library.dylib"
-	install_name_tool -id "@rpath/$library.dylib" "$out/$library.dylib"
-	install_name_tool -change ./libGLESv2.dylib @rpath/libGLESv2.dylib "$out/$library.dylib" 2>/dev/null
-	install_name_tool -change ./libEGL.dylib @rpath/libEGL.dylib "$out/$library.dylib" 2>/dev/null
-	codesign --force --sign - "$out/$library.dylib"
+# One library per architecture: a build hook hands each target its own. Named through @rpath as an app bundle loads
+# it (gn names it ./libGLESv2.dylib), and signed ad hoc again after the name changes; the app signs it with its own
+# identity when it embeds it.
+for cpu in arm64 x64; do
+	mkdir -p "$out/$cpu"
+	cp "out/$cpu/libGLESv2.dylib" "$out/$cpu/"
+	install_name_tool -id @rpath/libGLESv2.dylib "$out/$cpu/libGLESv2.dylib"
+	codesign --force --sign - "$out/$cpu/libGLESv2.dylib"
 done
 
+# The notices of what the library holds: ANGLE and the third-party code gn links into libGLESv2 (gn desc out/arm64
+# //:libGLESv2 deps --all).
+notices=(
+	"ANGLE|.|LICENSE"
+	"Abseil|third_party/abseil-cpp|LICENSE"
+	"astc-encoder|third_party/astc-encoder/src|LICENSE.TXT"
+	"LLVM libc++|third_party/libc++/src|LICENSE.TXT"
+	"LLVM libc++abi|third_party/libc++abi/src|LICENSE.TXT"
+	"LLVM libc|third_party/llvm-libc/src|LICENSE.TXT"
+	"Vulkan-Headers|third_party/vulkan-headers/src|LICENSE.md"
+	"zlib|third_party/zlib|LICENSE"
+)
+
+{
+	echo "# Third-party notices"
+	echo
+	echo "The libraries in lib/native/ are Google's ANGLE, built by tool/build.sh with the third-party code it links,"
+	echo "from ANGLE commit \`$commit\`. Their licenses follow."
+
+	for entry in "${notices[@]}"; do
+		IFS='|' read -r name path file <<< "$entry"
+		echo
+		echo "## $name"
+		echo
+		echo '```'
+		tr -d '\r' < "$path/$file"
+		echo '```'
+	done
+} > "$root/THIRD_PARTY_NOTICES.md"
+
 echo "Built ANGLE $commit into $out:"
-ls -l "$out"
+ls -lR "$out"

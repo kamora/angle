@@ -1,0 +1,25 @@
+name: angle
+description: >-
+  Google's ANGLE (OpenGL ES 3 and EGL on Metal), built from a pinned commit and bundled into Flutter and Dart apps
+  as a native library by a build hook.
+version: 0.1.0-dev.1
+repository: https://github.com/kamora/angle
+issue_tracker: https://github.com/kamora/angle/issues
+platforms:
+  macos:
+topics:
+  - opengl
+  - gles
+  - graphics
+  - ffi
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  code_assets: ^2.2.0
+  hooks: ^2.2.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6
