@@ -20,7 +20,7 @@ void main(List<String> args) async {
     final architecture = switch (code.targetArchitecture) {
       Architecture.arm64 => 'arm64',
       Architecture.x64 => 'x64',
-      final other => throw UnsupportedError('angle: no macOS build for $other.'),
+      final other => throw UnsupportedError('ent_angle: no macOS build for $other.'),
     };
     final file = input.packageRoot.resolve('lib/native/macos/$architecture/libGLESv2.dylib');
     output.assets.code.add(

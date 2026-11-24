@@ -4,7 +4,7 @@ library;
 import 'dart:ffi';
 
 // Resolved through the asset id, so to exactly the library this package bundles.
-@Native<Int32 Function()>(symbol: 'EGL_GetError', assetId: 'package:angle/libGLESv2')
+@Native<Int32 Function()>(symbol: 'EGL_GetError', assetId: 'package:ent_angle/libGLESv2')
 external int _error();
 
 // dladdr's Dl_info: the file of the image an address is in, then its base, the nearest symbol and its address.
@@ -33,7 +33,7 @@ final DynamicLibrary angle = () {
 
   try {
     if (dladdr(Native.addressOf<NativeFunction<Int32 Function()>>(_error).cast(), info) == 0) {
-      throw StateError('angle: the bundled library has no file.');
+      throw StateError('ent_angle: the bundled library has no file.');
     }
 
     final name = info.ref.file;

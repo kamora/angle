@@ -1,4 +1,4 @@
-name: angle
+name: ent_angle
 description: >-
   Google's ANGLE (OpenGL ES 3 and EGL on Metal), built from a pinned commit and bundled into Flutter and Dart apps
   as a native library by a build hook.

@@ -3,7 +3,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:angle/angle.dart';
+import 'package:ent_angle/ent_angle.dart';
 import 'package:test/test.dart';
 
 void main() {
