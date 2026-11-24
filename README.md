@@ -1,4 +1,4 @@
-# ent_angle
+# wrangle
 
 [ANGLE](https://chromium.googlesource.com/angle/angle) is Google's implementation of OpenGL ES and EGL on top of
 each platform's native graphics API. This package is our build of it, from a pinned commit, bundled into Flutter and
@@ -18,7 +18,7 @@ about 6 MB per architecture. ANGLE's `libGLESv2` holds EGL too, so `libEGL` is n
 ```dart
 import 'dart:ffi';
 
-import 'package:ent_angle/ent_angle.dart';
+import 'package:wrangle/wrangle.dart';
 
 final glClear = angle.lookupFunction<Void Function(Uint32), void Function(int)>('glClear');
 
