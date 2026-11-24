@@ -90,6 +90,13 @@ EOF
 gclient sync --no-history --shallow --nohooks -j 8
 gclient runhooks
 
+# Room in the library's header for a longer install name: Flutter renames it to the app's (or flutter test's) path
+# when it bundles it, and install_name_tool cannot grow a header without the padding. gn has no argument for Apple
+# linker flags, so the checkout's dynamic-library flags get it, once.
+grep -q headerpad_max_install_names build/config/mac/BUILD.gn ||
+	sed -i '' 's|ldflags = \[ "-Wl,-ObjC" \]|ldflags = [ "-Wl,-ObjC", "-Wl,-headerpad_max_install_names" ]|' build/config/mac/BUILD.gn
+grep -q headerpad_max_install_names build/config/mac/BUILD.gn
+
 # Release libraries with the Metal backend only; no tests, samples or debug symbols. gn refuses tabs in its arguments,
 # so they are one line of spaces.
 args=(

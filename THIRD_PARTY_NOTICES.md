@@ -1,7 +1,7 @@
 # Third-party notices
 
-The libraries in lib/native/ are Google's ANGLE, built by tool/build.sh from commit `a35430f259e8e277253c99cfcb5a0bf9226cdfe5`, with the
-third-party code it links. Their licenses follow.
+The libraries in lib/native/ are Google's ANGLE, built by tool/build.sh with the third-party code it links,
+from ANGLE commit `a35430f259e8e277253c99cfcb5a0bf9226cdfe5`. Their licenses follow.
 
 ## ANGLE
 
